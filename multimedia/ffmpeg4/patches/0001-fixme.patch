@@ -1,0 +1,31 @@
+--- a/Makefile
++++ b/Makefile
+@@ -105,7 +105,7 @@ else
+ endif
+ 
+ %$(PROGSSUF)_g$(EXESUF): $(FF_DEP_LIBS)
+-	$(LD) $(LDFLAGS) $(LDEXEFLAGS) $(LD_O) $(OBJS-$*) $(FF_EXTRALIBS)
++	$(CC) $(LDFLAGS) $(LDEXEFLAGS) $(LD_O) $(OBJS-$*) $(FF_EXTRALIBS)
+ 
+ VERSION_SH  = $(SRC_PATH)/ffbuild/version.sh
+ GIT_LOG     = $(SRC_PATH)/.git/logs/HEAD
+--- a/ffbuild/library.mak
++++ b/ffbuild/library.mak
+@@ -34,7 +34,7 @@ $(TESTPROGS): THISLIB = $(SUBDIR)$(LIBNA
+ $(LIBOBJS): CPPFLAGS += -DBUILDING_$(NAME)
+ 
+ $(TESTPROGS) $(TOOLS): %$(EXESUF): %.o
+-	$$(LD) $(LDFLAGS) $(LDEXEFLAGS) $$(LD_O) $$(filter %.o,$$^) $$(THISLIB) $(FFEXTRALIBS) $$(EXTRALIBS-$$(*F)) $$(ELIBS)
++	$$(CC) $(LDFLAGS) $(LDEXEFLAGS) $$(LD_O) $$(filter %.o,$$^) $$(THISLIB) $(FFEXTRALIBS) $$(EXTRALIBS-$$(*F)) $$(ELIBS)
+ 
+ $(SUBDIR)lib$(NAME).version: $(SUBDIR)version.h | $(SUBDIR)
+ 	$$(M) $$(SRC_PATH)/ffbuild/libversion.sh $(NAME) $$< > $$@
+@@ -50,7 +50,7 @@ $(SUBDIR)$(SLIBNAME): $(SUBDIR)$(SLIBNAM
+ 
+ $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SLIBOBJS) $(SUBDIR)lib$(NAME).ver
+ 	$(SLIB_CREATE_DEF_CMD)
+-	$$(LD) $(SHFLAGS) $(LDFLAGS) $(LDSOFLAGS) $$(LD_O) $$(filter %.o,$$^) $(FFEXTRALIBS)
++	$$(CC) $(SHFLAGS) $(LDFLAGS) $(LDSOFLAGS) $$(LD_O) $$(filter %.o,$$^) $(FFEXTRALIBS)
+ 	$(SLIB_EXTRA_CMD)
+ 
+ ifdef SUBDIR
