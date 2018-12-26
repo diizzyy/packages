@@ -9,15 +9,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=3proxy
 PKG_VERSION:=0.9-devel
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_MAINTAINER:=
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=COPYING
 
-PKG_SOURCE_URL:=https://codeload.github.com/z3APA3A/$(PKG_NAME)/tar.gz/68823c2?dummy=/
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-68823c2.tar.gz
-PKG_HASH:=c8f6e8bdf8fc71e02a8cb2512009966d6148d7f82f9fe40ed710624390e3ab7a
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-68823c2
+PKG_SOURCE_URL:=https://codeload.github.com/z3APA3A/$(PKG_NAME)/tar.gz/37cebe0?dummy=/
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-37cebe0.tar.gz
+PKG_HASH:=6e14d912d001b94593092cd87afb405feddcd2c183ea40ff1b2df74fb9b4d3be
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-37cebe0
 
 include $(INCLUDE_DIR)/package.mk
 
