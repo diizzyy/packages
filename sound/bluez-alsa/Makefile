@@ -8,16 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bluez-alsa
-PKG_VERSION:=20180615
+PKG_VERSION:=20181224
 PKG_RELEASE:=1
 PKG_MAINTAINER:=
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.txt
 
-PKG_SOURCE_URL:=https://codeload.github.com/Arkq/$(PKG_NAME)/tar.gz/4a81de1?dummy=/
+PKG_SOURCE_URL:=https://codeload.github.com/Arkq/$(PKG_NAME)/tar.gz/fbbd2a6?dummy=/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=3e91c85d31c7730c3383c194db101bc33a871b11aa92363514bf605bab91f4e2
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-4a81de1
+PKG_HASH:=39eca3c2fc7c50abc423b1236a2cb3e991e224895652e3f9f71ee7f5cc1b8a23
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-fbbd2a6
 
 PKG_FIXUP:=autoreconf
 
@@ -38,8 +38,8 @@ endef
 CONFIGURE_ARGS += --enable-aac --disable-rfcomm
 
 define Package/bluez-alsa/install
-	$(INSTALL_DIR) $(1)/usr/share/alsa/alsa.conf.d/
-	$(CP) $(PKG_BUILD_DIR)/src/asound/20-bluealsa.conf $(1)/usr/share/alsa/alsa.conf.d/
+	$(INSTALL_DIR) $(1)/etc/alsa/conf.d/
+	$(CP) $(PKG_BUILD_DIR)/src/asound/20-bluealsa.conf $(1)/etc/alsa/conf.d/
 	$(INSTALL_DIR) $(1)/usr/lib/alsa-lib
 	$(CP) $(PKG_BUILD_DIR)/src/asound/.libs/libasound_module_*_bluealsa.so $(1)/usr/lib/alsa-lib
 	$(INSTALL_DIR) $(1)/usr/bin
