@@ -1,0 +1,9 @@
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ compile: make-tinyssh.sh
+-	sh -e make-tinyssh.sh
++	sh -e make-tinysshcc.sh
+ clean:
+ 	rm -rf build
+ install:
