@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
 PKG_VERSION:=4.1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
@@ -211,6 +211,14 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
 		--cpu=generic
     endif
   endif
+endif
+
+### MIPS MT7620
+### Note: For whatever reason this subtarget doesn't play nice with any kind
+### of assembly optimization
+
+ifeq ($(call qstrip,$(CONFIG_TARGET_SUBTARGET)),mt7620)
+   CONFIGURE_ARGS += --disable-asm
 endif
 
 ### PowerPC apm821xx
