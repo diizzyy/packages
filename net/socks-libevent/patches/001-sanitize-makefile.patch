@@ -1,0 +1,44 @@
+diff --git a/Makefile b/Makefile
+index afe5a21..3e544f3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,15 +1,5 @@
+-CC=gcc
+-LD=gcc
+-STRIP=true
+ WARNINGS=-Wall -Wextra
+-DEBUG=-ggdb
+-COPTIM=-march=native -mfpmath=sse,387 -O2 -fomit-frame-pointer -pipe
+-DEFINES=
+-INCLUDES=
+-CFLAGS=$(WARNINGS) $(COPTIM) $(DEFINES) $(INCLUDES) $(DEBUG)
+-LDOPTIM=-Wl,-O1 -Wl,--as-needed
+-LIBFILES=-levent_core -levent_extra
+-LDFLAGS=$(WARNINGS) $(LDOPTIM) $(LIBFILES) $(DEBUG)
++LIBS= -levent_core -levent_extra
+ SRC_DIR=.
+ BUILD_DIR=build
+ EXECUTABLE=socks_server_libevent
+@@ -21,7 +11,7 @@ $(BUILD_DIR):
+ 	mkdir $(BUILD_DIR)
+ 
+ $(EXECUTABLE): $(BUILD_DIR)/main_loop.o $(BUILD_DIR)/transfer.o $(BUILD_DIR)/handle_client.o $(BUILD_DIR)/socks_proto.o $(BUILD_DIR)/task.o $(BUILD_DIR)/common.o $(BUILD_DIR)/stack.o
+-	$(LD) -o $@ $^ $(LDFLAGS)
++	$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS) $(INC) $(LIBS)
+ 	$(STRIP) $@
+ 
+ $(BUILD_DIR)/main_loop.o: $(SRC_DIR)/main_loop.c $(SRC_DIR)/transfer.h $(SRC_DIR)/handle_client.h $(SRC_DIR)/common.h $(SRC_DIR)/stack.h Makefile
+@@ -49,11 +39,10 @@ $(BUILD_DIR)/stack.o: $(SRC_DIR)/stack.c $(SRC_DIR)/stack.h Makefile
+ socks_server_: $(BUILD_DIR) socks_server
+ 
+ socks_server:  $(BUILD_DIR)/socks_server.o
+-	$(LD) -o $@ $^ $(WARNINGS) $(LDOPTIM) $(DEBUG)
+-	$(STRIP) $@
++	$(LD) -o $@ $^ $(WARNINGS)
+ 
+ $(BUILD_DIR)/socks_server.o: $(SRC_DIR)/socks_server.c Makefile
+-	$(CC) -o $@ $< -c $(WARNINGS) $(COPTIM) $(DEFINES) $(DEBUG)
++	$(CC) -o $@ $< -c $(WARNINGS) $(DEFINES)
+ 
+ 
+ clean:
