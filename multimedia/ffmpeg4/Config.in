@@ -1,0 +1,30 @@
+menu "Configuration"
+  depends on PACKAGE_ffmpeg4
+
+comment "Only select one SSL library"
+
+config ffmpeg4_LIB_FDK-AAC
+  bool "Enable FDK-AAC (AAC encoding) support"
+  default y
+
+config ffmpeg4_LIB_LAME
+  bool "Enable LAME (MP3 encoding) support"
+  default y if !mips || !mips64
+
+config ffmpeg4_LIB_MBEDTLS
+  bool "Enable mbed TLS support"
+  default y
+
+config ffmpeg4_LIB_OPENSSL
+  bool "Enable OpenSSL support"
+  default n
+
+config ffmpeg4_LIB_LIBX264
+  bool "Enable x264 (h264 encoding) support"
+  default y if arm || aarch64
+
+config ffmpeg4_OPT_PERFORMANCE
+  bool "Optimize for performance"
+  default y if !mips || !mips64
+
+endmenu

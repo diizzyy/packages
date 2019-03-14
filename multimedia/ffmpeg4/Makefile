@@ -6,26 +6,39 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
-PKG_VERSION:=4.1
-PKG_RELEASE:=3
+PKG_VERSION:=4.1.1
+PKG_RELEASE:=1
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
 
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.ffmpeg.org/releases/
-PKG_HASH:=a38ec4d026efb58506a99ad5cd23d5a9793b4bf415f2c4c2e9c1bb444acd1994
+PKG_HASH:=373749824dfd334d84e55dff406729edfd1606575ee44dd485d97d45ea4d2d86
 PKG_BUILD_DIR:=$(BUILD_DIR)/ffmpeg-$(PKG_VERSION)
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+
+PKG_CONFIG_DEPENDS:= \
+  CONFIG_ffmpeg4_LIB_FDK-AAC \
+  CONFIG_ffmpeg4_LIB_LAME \
+  CONFIG_ffmpeg4_LIB_MBEDTLS \
+  CONFIG_ffmpeg4_LIB_OPENSSL \
+  CONFIG_ffmpeg4_LIB_LIBX264 \
+  CONFIG_ffmpeg4_OPT_PERFORMANCE
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/ffmpeg4
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:=+libpthread +zlib +lame-lib +fdk-aac +libx264 +libopenssl @BUILD_PATENTED
+  DEPENDS:=+libpthread +zlib @BUILD_PATENTED
+  DEPENDS += +ffmpeg4_LIB_FDK-AAC:fdk-aac
+  DEPENDS += +ffmpeg4_LIB_LAME:lame-lib
+  DEPENDS += +ffmpeg4_LIB_MBEDTLS:libmbedtls
+  DEPENDS += +ffmpeg4_LIB_OPENSSL:libopenssl
+  DEPENDS += +ffmpeg4_LIB_LIBX264:libx264
   TITLE:=ffmpeg $(PKG_VERSION)
   URL:=https://www.ffmpeg.org/
   PROVIDES:= libffmpeg libffmpeg-full libffmpeg-mini libffmpeg-custom libffmpeg-audio-dec ffmpeg
@@ -33,6 +46,10 @@ endef
 
 define Package/ffmpeg4/description
   This is a "one size fits all" including patented code.
+endef
+
+define Package/ffmpeg4/config
+  source "$(SOURCE)/Config.in"
 endef
 
 TARGET_CFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CFLAGS))
@@ -68,7 +85,7 @@ CONFIGURE_ARGS += \
 	--enable-decoder=ffv1,flac,flashsv,flashsv2,flv \
 	--enable-decoder=g723_1,g729,gsm,gsm_ms,h263,h263i \
 	--enable-decoder=h263p,h264,hevc \
-	--enable-decoder=libfdk_aac,mjpeg,mjpegb \
+	--enable-decoder=mjpeg,mjpegb \
 	--enable-decoder=mlp,mp1,mp1float,mp2,mp2float,mp3 \
 	--enable-decoder=mp3adu,mp3adufloat,mp3float \
 	--enable-decoder=mp3on4,mp3on4float,mpeg1video \
@@ -91,9 +108,7 @@ CONFIGURE_ARGS += \
 	--enable-decoder=vb,vorbis,vp7,vp8,vp9,webp \
 	--enable-decoder=wrapped_avframe,ylc,zlib \
 	--enable-encoder=alac,flac \
-	--enable-encoder=flv,libfdk_aac,libmp3lame \
-	--enable-encoder=libx264,libx264rgb,mjpeg \
-	--enable-encoder=mpeg4,pcm_alaw \
+	--enable-encoder=flv,mjpeg,mpeg4,pcm_alaw \
 	--enable-encoder=pcm_f32be,pcm_f32le,pcm_f64be \
 	--enable-encoder=pcm_f64le,pcm_mulaw,pcm_s16be \
 	--enable-encoder=pcm_s16be_planar,pcm_s16le \
@@ -171,14 +186,18 @@ CONFIGURE_ARGS += \
 	--enable-filter=realtime,select \
 	--enable-filter=showinfo,streamselect,trim \
 	--enable-filter=volume,w3fdif,yadif  \
-	--enable-lto \
-	--enable-libfdk-aac --enable-libmp3lame --enable-openssl \
-	--enable-libx264 --disable-bzlib --disable-lzma \
+	--enable-lto --disable-bzlib --disable-lzma \
 	--enable-cross-compile --disable-debug \
 	--cross-prefix="$(TARGET_CROSS)" \
 	--arch="$(ARCH)" \
 	--target-os=linux \
 	--pkg-config="pkg-config" \
+	$(if $(CONFIG_ffmpeg4_LIB_FDK-AAC),--enable-decoder=libfdk_aac --enable-encoder=libfdk_aac --enable-libfdk-aac, --disable-libfdk-aac) \
+	$(if $(CONFIG_ffmpeg4_LIB_LAME),--enable-encoder=libmp3lame --enable-libmp3lame,--disable-libmp3lame) \
+	$(if $(CONFIG_ffmpeg4_LIB_MBEDTLS),--enable-mbedtls --enable-version3,--disable-mbedtls) \
+	$(if $(CONFIG_ffmpeg4_LIB_OPENSSL),--enable-openssl,--disable-openssl) \
+	$(if $(CONFIG_ffmpeg4_LIB_LIBX264), --enable-encoder=libx264 --enable-encoder=libx264rgb --enable-libx264,--disable-libx264) \
+	$(if $(CONFIG_ffmpeg4_OPT_PERFORMANCE),,--enable-small) \
 
 ### Platform specific fixes
 
@@ -200,7 +219,7 @@ endif
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc))
     TARGET_LDFLAGS += -fPIC
-    CONFIGURE_ARGS += --enable-small --disable-mipsfpu --disable-mipsdsp \
+    CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
 	--disable-mipsdspr2 --disable-fast-unaligned \
 	--disable-msa --disable-mmi --disable-inline-asm --cpu=generic
   else
