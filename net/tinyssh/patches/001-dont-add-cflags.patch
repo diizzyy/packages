@@ -1,0 +1,12 @@
+diff --git a/make-tinysshcc.sh b/make-tinysshcc.sh
+index 879eef7..16ebb8a 100755
+--- a/make-tinysshcc.sh
++++ b/make-tinysshcc.sh
+@@ -74,7 +74,6 @@ rm -rf "${work}"
+ mkdir -p "${work}"
+ (
+   cd "${work}"
+-  cflags=`cat "${top}/conf-cflags" || :`
+   cflags="${CPPFLAGS} ${CFLAGS} ${LDFLAGS} ${cflags}"
+ 
+   for i in ${cflags}; do
