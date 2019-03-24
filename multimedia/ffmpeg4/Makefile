@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
 PKG_VERSION:=4.1.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
@@ -21,6 +21,9 @@ PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
 PKG_CONFIG_DEPENDS:= \
+  CONFIG_ffmpeg4_ENC_FLV \
+  CONFIG_ffmpeg4_ENC_MJPEG \
+  CONFIG_ffmpeg4_ENC_MPEG4 \
   CONFIG_ffmpeg4_LIB_FDK-AAC \
   CONFIG_ffmpeg4_LIB_LAME \
   CONFIG_ffmpeg4_LIB_MBEDTLS \
@@ -45,7 +48,7 @@ define Package/ffmpeg4
 endef
 
 define Package/ffmpeg4/description
-  This is a "one size fits all" including patented code.
+  A somewhat customizable package including patented code.
 endef
 
 define Package/ffmpeg4/config
@@ -106,8 +109,7 @@ CONFIGURE_ARGS += \
 	--enable-decoder=rawvideo,truehd \
 	--enable-decoder=vb,vorbis,vp7,vp8,vp9,webp \
 	--enable-decoder=wrapped_avframe,ylc,zlib \
-	--enable-encoder=alac,flac \
-	--enable-encoder=flv,mjpeg,mpeg4,pcm_alaw \
+	--enable-encoder=alac,flac,pcm_alaw \
 	--enable-encoder=pcm_f32be,pcm_f32le,pcm_f64be \
 	--enable-encoder=pcm_f64le,pcm_mulaw,pcm_s16be \
 	--enable-encoder=pcm_s16be_planar,pcm_s16le \
@@ -191,6 +193,9 @@ CONFIGURE_ARGS += \
 	--arch="$(ARCH)" \
 	--target-os=linux \
 	--pkg-config="pkg-config" \
+	$(if $(CONFIG_ffmpeg4_ENC_FLV),--enable-encoder=flv,) \
+	$(if $(CONFIG_ffmpeg4_ENC_MJPEG),--enable-encoder=mjpeg,) \
+	$(if $(CONFIG_ffmpeg4_ENC_MPEG4),--enable-encoder=mpeg4,) \
 	$(if $(CONFIG_ffmpeg4_LIB_FDK-AAC),--enable-decoder=libfdk_aac --enable-encoder=libfdk_aac --enable-libfdk-aac, --disable-libfdk-aac) \
 	$(if $(CONFIG_ffmpeg4_LIB_LAME),--enable-encoder=libmp3lame --enable-libmp3lame,--disable-libmp3lame) \
 	$(if $(CONFIG_ffmpeg4_LIB_MBEDTLS),--enable-mbedtls --enable-version3,--disable-mbedtls) \
@@ -209,18 +214,19 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
   endif
 endif
 
-### MIPS 32-bit 64-bit
+### MIPS 32-bit and 64-bit
 ### Note: ffmpeg does support mips32r2 optimization however it does use opcodes
 ### that's not supported hence --cpu=generic otherwise the build will fail.
 ### Something similar is going on with mips64 as with PowerPC
 ### libavcodec/libavcodec.so: undefined reference to `ff_mpegvideoencdsp_init_mips'
+### ..or "invalid operands" using GCC 8.3.0 and binutils 2.32 if assembly is enabled
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc))
     TARGET_LDFLAGS += -fPIC
     CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
-	--disable-mipsdspr2 --disable-fast-unaligned \
-	--disable-msa --disable-mmi --disable-inline-asm --cpu=generic
+	--disable-mipsdspr2 --disable-fast-unaligned --disable-msa \
+	--disable-mmi --disable-inline-asm --disable-asm --cpu=generic
   else
     ifeq ($(call qstrip,$(CONFIG_CPU_TYPE)),octeonplus)
 	CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
@@ -229,14 +235,6 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
 		--cpu=generic
     endif
   endif
-endif
-
-### MIPS MT7620
-### Note: For whatever reason this subtarget doesn't play nice with any kind
-### of assembly optimization
-
-ifeq ($(call qstrip,$(CONFIG_TARGET_SUBTARGET)),mt7620)
-   CONFIGURE_ARGS += --disable-asm
 endif
 
 ### PowerPC apm821xx
