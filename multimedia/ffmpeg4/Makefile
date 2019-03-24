@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
-PKG_VERSION:=4.1.1
+PKG_VERSION:=4.1.2
 PKG_RELEASE:=1
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
@@ -14,7 +14,7 @@ PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
 
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.ffmpeg.org/releases/
-PKG_HASH:=373749824dfd334d84e55dff406729edfd1606575ee44dd485d97d45ea4d2d86
+PKG_HASH:=b95f0ae44798ab1434155ac7f81f30a7e9760a02282e4b5898372c22a335347b
 PKG_BUILD_DIR:=$(BUILD_DIR)/ffmpeg-$(PKG_VERSION)
 
 PKG_FIXUP:=autoreconf
@@ -84,8 +84,7 @@ CONFIGURE_ARGS += \
 	--enable-decoder=dsd_msbf_planar,eac3 \
 	--enable-decoder=ffv1,flac,flashsv,flashsv2,flv \
 	--enable-decoder=g723_1,g729,gsm,gsm_ms,h263,h263i \
-	--enable-decoder=h263p,h264,hevc \
-	--enable-decoder=mjpeg,mjpegb \
+	--enable-decoder=h263p,h264,hevc,mjpeg,mjpegb \
 	--enable-decoder=mlp,mp1,mp1float,mp2,mp2float,mp3 \
 	--enable-decoder=mp3adu,mp3adufloat,mp3float \
 	--enable-decoder=mp3on4,mp3on4float,mpeg1video \
