@@ -6,15 +6,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
-PKG_VERSION:=4.1.2
-PKG_RELEASE:=2
+PKG_VERSION:=4.1.3
+PKG_RELEASE:=1
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
 
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.ffmpeg.org/releases/
-PKG_HASH:=b95f0ae44798ab1434155ac7f81f30a7e9760a02282e4b5898372c22a335347b
+PKG_HASH:=0c3020452880581a8face91595b239198078645e7d7184273b8bcc7758beb63d
 PKG_BUILD_DIR:=$(BUILD_DIR)/ffmpeg-$(PKG_VERSION)
 
 PKG_FIXUP:=autoreconf
@@ -184,7 +184,7 @@ CONFIGURE_ARGS += \
 	--enable-filter=interleave,join,metadata \
 	--enable-filter=movie,null,nullsink \
 	--enable-filter=nullsrc,pad,qp,resample \
-	--enable-filter=realtime,select \
+	--enable-filter=realtime,scale,select \
 	--enable-filter=showinfo,streamselect,trim \
 	--enable-filter=volume,w3fdif,yadif  \
 	--enable-lto --disable-bzlib --disable-lzma \
