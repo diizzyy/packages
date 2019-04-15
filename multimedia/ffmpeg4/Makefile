@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
 PKG_VERSION:=4.1.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
@@ -19,6 +19,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/ffmpeg-$(PKG_VERSION)
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 PKG_CONFIG_DEPENDS:= \
   CONFIG_ffmpeg4_ENC_FLV \
@@ -56,6 +57,14 @@ define Package/ffmpeg4/config
 endef
 
 TARGET_CFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CFLAGS))
+
+# When crosscompiling LD needs to set as CC
+CONFIGURE_VARS := $(filter-out LD=%,$(CONFIGURE_VARS)) LD="$(TARGET_CC)"
+MAKE_FLAGS := $(filter-out LD=%,$(MAKE_FLAGS)) LD="$(TARGET_CC)"
+
+# Don't override ffmpeg's ARCH setting via ./configure
+# Fixes various linking issues
+MAKE_FLAGS := $(filter-out ARCH=%,$(MAKE_FLAGS))
 
 CONFIGURE_ARGS:=$(filter-out	\
 	--target=%		\
@@ -187,11 +196,12 @@ CONFIGURE_ARGS += \
 	--enable-filter=realtime,scale,select \
 	--enable-filter=showinfo,streamselect,trim \
 	--enable-filter=volume,w3fdif,yadif  \
-	--enable-lto --disable-bzlib --disable-lzma \
+	--disable-bzlib --disable-lzma \
 	--enable-cross-compile --disable-debug \
 	--cross-prefix="$(TARGET_CROSS)" \
 	--arch="$(ARCH)" \
-	--target-os=linux \
+	--target-os="linux" \
+	--ld="$(TARGET_CC)" \
 	--pkg-config="pkg-config" \
 	$(if $(CONFIG_ffmpeg4_ENC_FLV),--enable-encoder=flv,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MJPEG),--enable-encoder=mjpeg,) \
@@ -217,19 +227,17 @@ endif
 ### MIPS 32-bit and 64-bit
 ### Note: ffmpeg does support mips32r2 optimization however it does use opcodes
 ### that's not supported hence --cpu=generic otherwise the build will fail.
-### Something similar is going on with mips64 as with PowerPC
-### libavcodec/libavcodec.so: undefined reference to `ff_mpegvideoencdsp_init_mips'
-### ..or "invalid operands" using GCC 8.3.0 and binutils 2.32 if assembly is enabled
+### Enabling assembly generates "invalid operands" using GCC 8.3.0 and binutils 2.32
+### Enabling MIPS16 breaks LTO
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc))
-    TARGET_LDFLAGS += -fPIC
     CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
 	--disable-mipsdspr2 --disable-fast-unaligned --disable-msa \
-	--disable-mmi --disable-inline-asm --disable-asm --cpu=generic
+	--disable-mmi --disable-asm --cpu=generic
   else
     ifeq ($(call qstrip,$(CONFIG_CPU_TYPE)),octeonplus)
-	CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
+      CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
 		--disable-mipsdspr2 --disable-fast-unaligned \
 		--disable-msa --disable-mmi --disable-asm \
 		--cpu=generic
@@ -237,11 +245,22 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
   endif
 endif
 
+ifneq ($(CONFIG_USE_MIPS16),y)
+  CONFIGURE_ARGS += --enable-lto
+endif
+
 ### PowerPC apm821xx
-### Note: There's something wonky with the PPC asm code if you disable altivec
-### libavcodec/libavcodec.so: undefined reference to `ff_vp78dsp_init_ppc'...
+### Note: No need to include instructions that aren't supported
 ifeq ($(call qstrip,$(CONFIG_CPU_TYPE)),464fp)
-  CONFIGURE_ARGS += --disable-altivec --disable-asm
+  CONFIGURE_ARGS += --disable-altivec --disable-vsx
+endif
+
+### x86
+### Note: FFmpeg blindly assumes that NASM is available
+ifeq ($(CONFIG_TARGET_x86),y)
+  ifneq ($(CONFIG_NASM),y)
+    CONFIGURE_ARGS += --disable-x86asm
+  endif
 endif
 
 define Build/InstallDev
