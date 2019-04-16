@@ -22,6 +22,7 @@ PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
 PKG_CONFIG_DEPENDS:= \
+  CONFIG_ffmpeg4_LICENSING \
   CONFIG_ffmpeg4_ENC_FLV \
   CONFIG_ffmpeg4_ENC_MJPEG \
   CONFIG_ffmpeg4_ENC_MPEG4 \
@@ -82,7 +83,7 @@ CONFIGURE_ARGS:=$(filter-out	\
 	, $(CONFIGURE_ARGS))
 
 CONFIGURE_ARGS += \
-	--enable-gpl --enable-nonfree --disable-static \
+	--disable-static \
 	--enable-shared --disable-ffplay --disable-ffprobe \
 	--disable-doc --disable-htmlpages \
 	--disable-manpages --disable-podpages \
@@ -206,11 +207,11 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_ffmpeg4_ENC_FLV),--enable-encoder=flv,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MJPEG),--enable-encoder=mjpeg,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MPEG4),--enable-encoder=mpeg4,) \
-	$(if $(CONFIG_ffmpeg4_LIB_FDK-AAC),--enable-decoder=libfdk_aac --enable-encoder=libfdk_aac --enable-libfdk-aac, --disable-libfdk-aac) \
+	$(if $(CONFIG_ffmpeg4_LIB_FDK-AAC),--enable-decoder=libfdk_aac --enable-encoder=libfdk_aac --enable-libfdk-aac --enable-nonfree, --disable-libfdk-aac) \
 	$(if $(CONFIG_ffmpeg4_LIB_LAME),--enable-encoder=libmp3lame --enable-libmp3lame,--disable-libmp3lame) \
 	$(if $(CONFIG_ffmpeg4_LIB_MBEDTLS),--enable-mbedtls --enable-version3,--disable-mbedtls) \
-	$(if $(CONFIG_ffmpeg4_LIB_OPENSSL),--enable-openssl,--disable-openssl) \
-	$(if $(CONFIG_ffmpeg4_LIB_LIBX264), --enable-encoder=libx264 --enable-encoder=libx264rgb --enable-libx264,--disable-libx264) \
+	$(if $(CONFIG_ffmpeg4_LIB_OPENSSL),--enable-openssl --enable-nonfree,--disable-openssl) \
+	$(if $(CONFIG_ffmpeg4_LIB_LIBX264),--enable-encoder=libx264 --enable-encoder=libx264rgb --enable-libx264 --enable-gpl,--disable-libx264) \
 	$(if $(CONFIG_ffmpeg4_OPT_PERFORMANCE),,--enable-small) \
 
 ### Platform specific fixes
@@ -257,7 +258,11 @@ endif
 
 ### x86
 ### Note: FFmpeg blindly assumes that NASM is available
+### Some assembly files for x86 are licensed under
+### GNU General Public License v2.0 or later
+### https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md
 ifeq ($(CONFIG_TARGET_x86),y)
+  CONFIGURE_ARGS += --enable-gpl
   ifneq ($(CONFIG_NASM),y)
     CONFIGURE_ARGS += --disable-x86asm
   endif
