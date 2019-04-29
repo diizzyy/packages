@@ -46,26 +46,26 @@ define Package/ffmpeg4
   DEPENDS += +ffmpeg4_LIB_LIBX264:libx264
   TITLE:=ffmpeg $(PKG_VERSION)
   URL:=https://www.ffmpeg.org/
-  PROVIDES:= libffmpeg libffmpeg-full libffmpeg-mini libffmpeg-custom libffmpeg-audio-dec ffmpeg
+  PROVIDES:=libffmpeg libffmpeg-full libffmpeg-mini libffmpeg-custom libffmpeg-audio-dec ffmpeg
 endef
 
 define Package/ffmpeg4/description
-  A somewhat customizable package including patented code.
+  A somewhat customizable package that may include patented code.
 endef
 
 define Package/ffmpeg4/config
   source "$(SOURCE)/Config.in"
 endef
 
-TARGET_CFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CFLAGS))
+TARGET_CFLAGS:=$(FPIC) $(filter-out -O%,$(TARGET_CFLAGS))
 
 # When crosscompiling LD needs to set as CC
-CONFIGURE_VARS := $(filter-out LD=%,$(CONFIGURE_VARS)) LD="$(TARGET_CC)"
-MAKE_FLAGS := $(filter-out LD=%,$(MAKE_FLAGS)) LD="$(TARGET_CC)"
+CONFIGURE_VARS:=$(filter-out LD=%,$(CONFIGURE_VARS)) LD="$(TARGET_CC)"
+MAKE_FLAGS:=$(filter-out LD=%,$(MAKE_FLAGS)) LD="$(TARGET_CC)"
 
-# Don't override ffmpeg's ARCH setting via ./configure
+# Don't override FFmpeg's ARCH setting via ./configure
 # Fixes various linking issues
-MAKE_FLAGS := $(filter-out ARCH=%,$(MAKE_FLAGS))
+MAKE_FLAGS:=$(filter-out ARCH=%,$(MAKE_FLAGS))
 
 CONFIGURE_ARGS:=$(filter-out	\
 	--target=%		\
@@ -226,23 +226,16 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
 endif
 
 ### MIPS 32-bit and 64-bit
-### Note: ffmpeg does support mips32r2 optimization however it does use opcodes
+### Note: FFmpeg does support MIPS32R2 optimization however it does use opcodes
 ### that's not supported hence --cpu=generic otherwise the build will fail.
 ### Enabling assembly generates "invalid operands" using GCC 8.3.0 and binutils 2.32
 ### Enabling MIPS16 breaks LTO
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
-  ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc))
+  ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc octeonplus))
     CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
 	--disable-mipsdspr2 --disable-fast-unaligned --disable-msa \
 	--disable-mmi --disable-asm --cpu=generic
-  else
-    ifeq ($(call qstrip,$(CONFIG_CPU_TYPE)),octeonplus)
-      CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
-		--disable-mipsdspr2 --disable-fast-unaligned \
-		--disable-msa --disable-mmi --disable-asm \
-		--cpu=generic
-    endif
   endif
 endif
 
