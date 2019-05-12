@@ -226,10 +226,10 @@ ifeq ($(CONFIG_SOFT_FLOAT),y)
 endif
 
 ### MIPS 32-bit and 64-bit
-### Note: FFmpeg does support MIPS32R2 optimization however it does use opcodes
-### that's not supported hence --cpu=generic otherwise the build will fail.
-### Enabling assembly generates "invalid operands" using GCC 8.3.0 and binutils 2.32
-### Enabling MIPS16 breaks LTO
+### Note: FFmpeg does support MIPS32R2 optimization however it uses opcodes
+### that aren't supported hence --cpu=generic otherwise the build will fail.
+### Enabling assembly generates "invalid operands" using GCC 8.3.0 and
+### binutils 2.32, additionally MIPS16 breaks LTO
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc octeonplus))
