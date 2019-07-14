@@ -51,6 +51,10 @@ config ffmpeg4_LIB_OPENSSL
   bool "Enable OpenSSL support"
   default n
 
+config ffmpeg4_LIB_LIBOPUS
+  bool "Enable Opus (de/encoding) support using libopus"
+  default n
+
 config ffmpeg4_LIB_LIBX264
   bool "Enable x264 (h264 encoding) support"
   default y if arm || aarch64
