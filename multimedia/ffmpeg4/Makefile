@@ -215,7 +215,7 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_ffmpeg4_LIB_MBEDTLS),--enable-mbedtls --enable-version3,--disable-mbedtls) \
 	$(if $(CONFIG_ffmpeg4_LIB_OPENSSL),--enable-openssl --enable-nonfree,--disable-openssl) \
 	$(if $(CONFIG_ffmpeg4_LIB_LIBOPUS),--enable-decoder=libopus --enable-encoder=libopus --enable-libopus,--disable-libopus) \
-	$(if $(CONFIG_ffmpeg4_LIB_VORBIS),--enable-decoder=libvorbis --enable-encoder=libvorbis --enable-libvorbis,--disable-libvorbis) \
+	$(if $(CONFIG_ffmpeg4_LIB_LIBVORBIS),--enable-decoder=libvorbis --enable-encoder=libvorbis --enable-libvorbis,--disable-libvorbis) \
 	$(if $(CONFIG_ffmpeg4_LIB_LIBX264),--enable-encoder=libx264 --enable-encoder=libx264rgb --enable-libx264 --enable-gpl,--disable-libx264) \
 	$(if $(CONFIG_ffmpeg4_OPT_PERFORMANCE),,--enable-small) \
 
