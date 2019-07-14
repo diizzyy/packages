@@ -6,15 +6,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg4
-PKG_VERSION:=4.1.3
-PKG_RELEASE:=2
+PKG_VERSION:=4.1.4
+PKG_RELEASE:=1
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
-
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.ffmpeg.org/releases/
-PKG_HASH:=0c3020452880581a8face91595b239198078645e7d7184273b8bcc7758beb63d
+PKG_HASH:=f1f049a82fcfbf156564e73a3935d7e750891fab2abf302e735104fd4050a7e1
 PKG_BUILD_DIR:=$(BUILD_DIR)/ffmpeg-$(PKG_VERSION)
 
 PKG_FIXUP:=autoreconf
@@ -38,12 +37,12 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ffmpeg4
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:=+libpthread +zlib @BUILD_PATENTED
-  DEPENDS += +ffmpeg4_LIB_FDK-AAC:fdk-aac
-  DEPENDS += +ffmpeg4_LIB_LAME:lame-lib
-  DEPENDS += +ffmpeg4_LIB_MBEDTLS:libmbedtls
-  DEPENDS += +ffmpeg4_LIB_OPENSSL:libopenssl
-  DEPENDS += +ffmpeg4_LIB_LIBX264:libx264
+  DEPENDS:=+libpthread +zlib @BUILD_PATENTED \
+    +ffmpeg4_LIB_FDK-AAC:fdk-aac \
+    +ffmpeg4_LIB_LAME:lame-lib \
+    +ffmpeg4_LIB_MBEDTLS:libmbedtls \
+    +ffmpeg4_LIB_OPENSSL:libopenssl \
+    +ffmpeg4_LIB_LIBX264:libx264
   TITLE:=ffmpeg $(PKG_VERSION)
   URL:=https://www.ffmpeg.org/
   PROVIDES:=libffmpeg libffmpeg-full libffmpeg-mini libffmpeg-custom libffmpeg-audio-dec ffmpeg

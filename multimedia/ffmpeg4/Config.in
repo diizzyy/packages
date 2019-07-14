@@ -1,5 +1,6 @@
+if PACKAGE_ffmpeg4
+
 menu "Configuration"
-  depends on PACKAGE_ffmpeg4
 
 comment "Only select one SSL library"
 
@@ -59,3 +60,5 @@ config ffmpeg4_OPT_PERFORMANCE
   default y if !mips && !mips64
 
 endmenu
+
+endif
