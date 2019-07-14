@@ -47,6 +47,10 @@ config ffmpeg4_LIB_MBEDTLS
   bool "Enable mbed TLS support"
   default y
 
+config ffmpeg4_LIB_LIBVORBIS
+  bool "Enable Ogg Vorbis (de/encoding) support using libvorbis"
+  default n
+
 config ffmpeg4_LIB_OPENSSL
   bool "Enable OpenSSL support"
   default n
