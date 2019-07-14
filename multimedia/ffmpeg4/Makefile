@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=ffmpeg4
 PKG_VERSION:=4.1.4
 PKG_RELEASE:=1
-PKG_MAINTAINER:=
+PKG_MAINTAINER:=Maintained by OpenWrt community
 PKG_LICENSE:=GPL-2.0+ LGPL-2.1+ LGPL-3.0
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
@@ -48,13 +48,40 @@ define Package/ffmpeg4
     +ffmpeg4_LIB_LIBOPUS:libopus \
     +ffmpeg4_LIB_LIBVORBIS:libvorbis \
     +ffmpeg4_LIB_LIBX264:libx264
-  TITLE:=ffmpeg $(PKG_VERSION)
+  TITLE:=FFmpeg $(PKG_VERSION)
   URL:=https://www.ffmpeg.org/
   PROVIDES:=libffmpeg libffmpeg-full libffmpeg-mini libffmpeg-custom libffmpeg-audio-dec ffmpeg
 endef
 
+define Package/ffmpeg4-ffprobe
+  SECTION:=multimedia
+  CATEGORY:=Multimedia
+  DEPENDS:=+ffmpeg4
+  TITLE:=ffprobe for FFmpeg $(PKG_VERSION)
+  URL:=https://www.ffmpeg.org/
+endef
+
 define Package/ffmpeg4/description
-  A somewhat customizable package that may include patented code.
+  Complete solution to record, convert and stream audio and video
+  This packages uses the "one size fits all" approach and may not
+  be optimal on devices with very little storage.
+
+  The idea is to have a package that isn't huge and still capable
+  of handling common formats of files and streams, do conversions
+  and encode without sacrifcing performance (if applicable).
+
+  Some customizations can be done but are kept to a minimum for
+  simple configuration and usage. Due to the approach mentioned
+  above and distribution polices this package is not available
+  in binary (compiled) form.
+
+  Please respect the above and keep it in mind when creating a
+  pull request.
+endef
+
+define Package/ffmpeg4-ffprobe/description
+  FFprobe is a utility that gathers information from multimedia streams
+  and prints it in human- and machine-readable fashion.
 endef
 
 define Package/ffmpeg4/config
@@ -88,7 +115,7 @@ CONFIGURE_ARGS:=$(filter-out	\
 
 CONFIGURE_ARGS += \
 	--disable-static \
-	--enable-shared --disable-ffplay --disable-ffprobe \
+	--enable-shared --disable-ffplay \
 	--disable-doc --disable-htmlpages \
 	--disable-manpages --disable-podpages \
 	--disable-txtpages --disable-postproc \
@@ -268,6 +295,17 @@ ifeq ($(CONFIG_TARGET_x86),y)
   endif
 endif
 
+### Main build already has ffprobe
+
+define Build/ffmpeg4-ffprobe/Prepare
+endef
+
+define Build/ffmpeg4-ffprobe/Configure
+endef
+
+define Build/ffmpeg4-ffprobe/Compile
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -284,4 +322,10 @@ define Package/ffmpeg4/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ffmpeg $(1)/usr/bin/
 endef
 
+define Package/ffmpeg4-ffprobe/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ffprobe $(1)/usr/bin/
+endef
+
+$(eval $(call BuildPackage,ffmpeg4-ffprobe))
 $(eval $(call BuildPackage,ffmpeg4))
