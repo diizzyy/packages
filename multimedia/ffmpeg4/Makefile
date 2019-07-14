@@ -22,6 +22,7 @@ PKG_BUILD_PARALLEL:=1
 
 PKG_CONFIG_DEPENDS:= \
   CONFIG_ffmpeg4_LICENSING \
+  CONFIG_ffmpeg4_DEC_PNG \
   CONFIG_ffmpeg4_ENC_FLV \
   CONFIG_ffmpeg4_ENC_MJPEG \
   CONFIG_ffmpeg4_ENC_MPEG4 \
@@ -207,6 +208,7 @@ CONFIGURE_ARGS += \
 	--target-os="linux" \
 	--ld="$(TARGET_CC)" \
 	--pkg-config="pkg-config" \
+	$(if $(CONFIG_ffmpeg4_DEC_PNG),--enable-decoder=png --enable-parser=png) \
 	$(if $(CONFIG_ffmpeg4_ENC_FLV),--enable-encoder=flv,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MJPEG),--enable-encoder=mjpeg,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MPEG4),--enable-encoder=mpeg4,) \

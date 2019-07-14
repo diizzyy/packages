@@ -23,6 +23,10 @@ config ffmpeg4_LICENSING
 	More information here:
 	https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md
 
+config ffmpeg4_DEC_PNG
+  bool "Enable builtin PNG decoder"
+  default n
+
 config ffmpeg4_ENC_FLV
   bool "Enable builtin FLV encoder"
   default y if !mips && !mips64
