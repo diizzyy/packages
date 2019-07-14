@@ -8,9 +8,11 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=ffmpeg4
 PKG_VERSION:=4.1.4
 PKG_RELEASE:=1
+
 PKG_MAINTAINER:=Maintained by OpenWrt community
 PKG_LICENSE:=GPL-2.0+ LGPL-2.1+ LGPL-3.0
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
+
 PKG_SOURCE:=ffmpeg-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.ffmpeg.org/releases/
 PKG_HASH:=f1f049a82fcfbf156564e73a3935d7e750891fab2abf302e735104fd4050a7e1
@@ -90,12 +92,12 @@ endef
 
 TARGET_CFLAGS:=$(FPIC) $(filter-out -O%,$(TARGET_CFLAGS))
 
-# When crosscompiling LD needs to set as CC
+### When crosscompiling LD needs to set as CC
 CONFIGURE_VARS:=$(filter-out LD=%,$(CONFIGURE_VARS)) LD="$(TARGET_CC)"
 MAKE_FLAGS:=$(filter-out LD=%,$(MAKE_FLAGS)) LD="$(TARGET_CC)"
 
-# Don't override FFmpeg's ARCH setting via ./configure
-# Fixes various linking issues
+### Don't override FFmpeg's ARCH setting via ./configure
+### Fixes various linking issues
 MAKE_FLAGS:=$(filter-out ARCH=%,$(MAKE_FLAGS))
 
 CONFIGURE_ARGS:=$(filter-out	\
@@ -114,8 +116,7 @@ CONFIGURE_ARGS:=$(filter-out	\
 	, $(CONFIGURE_ARGS))
 
 CONFIGURE_ARGS += \
-	--disable-static \
-	--enable-shared --disable-ffplay \
+	--disable-static --enable-shared --disable-ffplay \
 	--disable-doc --disable-htmlpages \
 	--disable-manpages --disable-podpages \
 	--disable-txtpages --disable-postproc \
@@ -264,7 +265,6 @@ endif
 ### that aren't supported hence --cpu=generic otherwise the build will fail.
 ### Enabling assembly generates "invalid operands" using GCC 8.3.0 and
 ### binutils 2.32, additionally MIPS16 breaks LTO
-
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   ifneq (,$(filter $(call qstrip,$(CONFIG_CPU_TYPE)), mips32 24kc 34kc 74kc octeonplus))
     CONFIGURE_ARGS += --disable-mipsfpu --disable-mipsdsp \
@@ -295,8 +295,28 @@ ifeq ($(CONFIG_TARGET_x86),y)
   endif
 endif
 
-### Main build already has ffprobe
+### Needs testing...
+### NASM produces broken files for i386 subtargets except for pentium4
+#ifeq ($(CONFIG_i386),y)
+#  ifneq ($(findstring pentium4,$(CONFIG_TARGET_ARCH_PACKAGES)),)
+#    ifeq ($(CONFIG_NASM),y)
+#      CONFIGURE_ARGS += --enable-gpl
+#    else
+#      CONFIGURE_ARGS += --disable-x86asm
+#    endif
+#  else
+#    CONFIGURE_ARGS += --disable-x86asm
+#  endif
+#endif
+#
+#ifeq ($(CONFIG_x86_64),y)
+#  CONFIGURE_ARGS += --enable-gpl
+#  ifneq ($(CONFIG_NASM),y)
+#    CONFIGURE_ARGS += --disable-x86asm
+#  endif
+#endif
 
+### Main build already has ffprobe
 define Build/ffmpeg4-ffprobe/Prepare
 endef
 
