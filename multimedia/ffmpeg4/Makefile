@@ -24,10 +24,10 @@ PKG_BUILD_PARALLEL:=1
 
 PKG_CONFIG_DEPENDS:= \
   CONFIG_ffmpeg4_LICENSING \
-  CONFIG_ffmpeg4_DEC_PNG \
   CONFIG_ffmpeg4_ENC_FLV \
   CONFIG_ffmpeg4_ENC_MJPEG \
   CONFIG_ffmpeg4_ENC_MPEG4 \
+  CONFIG_ffmpeg4_ENC_PNG \
   CONFIG_ffmpeg4_LIB_FDK-AAC \
   CONFIG_ffmpeg4_LIB_LAME \
   CONFIG_ffmpeg4_LIB_MBEDTLS \
@@ -236,10 +236,10 @@ CONFIGURE_ARGS += \
 	--target-os="linux" \
 	--ld="$(TARGET_CC)" \
 	--pkg-config="pkg-config" \
-	$(if $(CONFIG_ffmpeg4_DEC_PNG),--enable-decoder=png --enable-parser=png) \
 	$(if $(CONFIG_ffmpeg4_ENC_FLV),--enable-encoder=flv,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MJPEG),--enable-encoder=mjpeg,) \
 	$(if $(CONFIG_ffmpeg4_ENC_MPEG4),--enable-encoder=mpeg4,) \
+	$(if $(CONFIG_ffmpeg4_ENC_PNG),--enable-encoder=png,) \
 	$(if $(CONFIG_ffmpeg4_LIB_FDK-AAC),--enable-decoder=libfdk_aac --enable-encoder=libfdk_aac --enable-libfdk-aac --enable-nonfree, --disable-libfdk-aac) \
 	$(if $(CONFIG_ffmpeg4_LIB_LAME),--enable-encoder=libmp3lame --enable-libmp3lame,--disable-libmp3lame) \
 	$(if $(CONFIG_ffmpeg4_LIB_MBEDTLS),--enable-mbedtls --enable-version3,--disable-mbedtls) \
